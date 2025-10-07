@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الألعاب - تطبيق الربح</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            padding: 30px 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .balance {
+            font-size: 28px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .games-list {
+            padding: 20px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .game-card:active {
+            transform: scale(0.98);
+        }
+
+        .game-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #F44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>🎮 الألعاب</h2>
+        <div class="balance" id="balance">\$0.50</div>
+    </div>
+
+    <div class="games-list">
+        <div class="game-card" onclick="playGame('memory', 0.10)">
+            <div class="game-icon">🧠</div>
+            <h3>لعبة الذاكرة</h3>
+            <p style="color: #666; margin: 10px 0;">اختبر ذاكرتك وطابق البطاقات</p>
+            <div style="color: #4CAF50; font-weight: bold;">مكافأة: \$0.10</div>
+            <button class="btn-success">العب الآن</button>
+        </div>
+
+        <div class="game-card" onclick="playGame('puzzle', 0.08)">
+            <div class="game-icon">🧩</div>
+            <h3>لعبة الألغاز</h3>
+            <p style="color: #666; margin: 10px 0;">رتب الأرقام من 1 إلى 8</p>
+            <div style="color: #4CAF50; font-weight: bold;">مكافأة: \$0.08</div>
+            <button class="btn-success">العب الآن</button>
+        </div>
+
+        <div class="game-card" onclick="playGame('speed', 0.05)">
+            <div class="game-icon">⚡</div>
+            <h3>لعبة السرعة</h3>
+            <p style="color: #666; margin: 10px 0;">اضغط أكبر عدد ممكن</p>
+            <div style="color: #4CAF50; font-weight: bold;">مكافأة: \$0.05</div>
+            <button class="btn-success">العب الآن</button>
+        </div>
+
+        <div class="game-card" onclick="playGame('focus', 0.07)">
+            <div class="game-icon">🎯</div>
+            <h3>لعبة التركيز</h3>
+            <p style="color: #666; margin: 10px 0;">اصطاد الأهداف المتحركة</p>
+            <div style="color: #4CAF50; font-weight: bold;">مكافأة: \$0.07</div>
+            <button class="btn-success">العب الآن</button>
+        </div>
+
+        <div class="game-card" onclick="playGame('math', 0.06)">
+            <div class="game-icon">🔢</div>
+            <h3>لعبة الحساب</h3>
+            <p style="color: #666; margin: 10px 0;">حل أكبر عدد من المسائل</p>
+            <div style="color: #4CAF50; font-weight: bold;">مكافأة: \$0.06</div>
+            <button class="btn-success">العب الآن</button>
+        </div>
+
+        <button class="btn-danger" onclick="goBack()">رجوع للرئيسية</button>
+    </div>
+
+    <script>
+        let balance = parseFloat(localStorage.getItem('balance')) || 0.50;
+        
+        function updateBalance() {
+            document.getElementById('balance').textContent = '$' + balance.toFixed(2);
+        }
+
+        function playGame(gameName, reward) {
+            // محاكاة اللعبة
+            alert('🎮 شاهد الإعلان أولاً...');
+            
+            setTimeout(() => {
+                const won = Math.random() > 0.3; // 70% فرصة فوز
+                
+                if (won) {
+                    balance += reward;
+                    localStorage.setItem('balance', balance);
+                    updateBalance();
+                    alert('🎉 مبروك! ربحت $' + reward);
+                } else {
+                    alert('😔 حاول مرة أخرى!');
+                }
+            }, 2000);
+        }
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+
+        updateBalance();
+    </script>
+
+</body>
+</html>
