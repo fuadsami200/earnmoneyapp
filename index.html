@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الربح - نسخة كاملة</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1E88E5, #1565C0);
+            padding: 30px 20px;
+            border-radius: 0 0 30px 30px;
+            color: white;
+            text-align: center;
+            margin: -20px -20px 20px -20px;
+        }
+
+        .balance {
+            font-size: 36px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: #1E88E5; color: white; }
+        .btn-success { background: #4CAF50; color: white; }
+        .btn-danger { background: #F44336; color: white; }
+        .btn-warning { background: #FF9800; color: white; }
+
+        .game-menu {
+            display: grid;
+            gap: 15px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .game-card:active {
+            transform: scale(0.98);
+        }
+
+        .game-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            z-index: 10000;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { top: -100px; }
+            to { top: 20px; }
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #1E88E5, #4CAF50);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1E88E5;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash" class="screen active">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #1E88E5, #1565C0);">
+            <div class="logo">💰</div>
+            <h1 style="color: white; margin-top: 20px;">تطبيق الربح من الإنترنت</h1>
+            <p style="color: white; margin-top: 10px;">جاري التحميل...</p>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen">
+        <div style="padding-top: 50px;">
+            <div class="logo">💰</div>
+            <h1 style="text-align: center; margin-bottom: 10px;">مرحباً بك</h1>
+            <p style="text-align: center; color: #666; margin-bottom: 40px;">ابدأ الربح الآن!</p>
+            
+            <div class="card">
+                <button class="btn-primary" onclick="loginUser()">
+                    📱 تسجيل الدخول بـ Google
+                </button>
+                <button id="adminBtn" class="btn-danger" style="display: none;" onclick="showScreen('adminLogin')">
+                    🔒 دخول الأدمن
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;" onclick="clickCount++; if(clickCount >= 5) document.getElementById('adminBtn').style.display = 'block'">
+                <small style="color: #999;">اضغط هنا 5 مرات لدخول الأدمن</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login -->
+    <div id="adminLogin" class="screen">
+        <div style="padding-top: 50px;">
+            <h1 style="text-align: center; margin-bottom: 30px;">🔒 دخول الأدمن</h1>
+            <div class="card">
+                <input type="text" id="adminUsername" placeholder="اسم المستخدم">
+                <input type="password" id="adminPassword" placeholder="كلمة المرور">
+                <button class="btn-primary" onclick="adminLogin()">تسجيل الدخول</button>
+                <button class="btn-danger" onclick="showScreen('loginScreen')">رجوع</button>
+            </div>
+            <div style="background: #FFF3E0; padding: 15px; border-radius: 10px; margin-top: 20px;">
+                <small style="color: #F57C00;">
+                    <strong>معلومات الاختبار:</strong><br>
+                    Username: admin<br>
+                    Password: Admin@2024#Secure
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="userDashboard" class="screen">
+        <div class="header">
+            <h2>مرحباً 👋</h2>
+            <div class="balance" id="userBalance">\$0.50</div>
+            <small>رصيدك الحالي</small>
+        </div>
+
+        <div class="card">
+            <button class="btn-warning" onclick="claimDailyBonus()">
+                🎁 احصل على المكافأة اليومية
+            </button>
+        </div>
+
+        <h3 style="margin-bottom: 15px;">🎮 طرق الربح:</h3>
+
+        <div class="game-menu">
+            <div class="game-card" onclick="window.location.href='games.html'">
+                <div class="game-icon">🎮</div>
+                <div><strong>الألعاب</strong></div>
+                <small style="color: #666;">العب واربح حتى \$0.10</small>
+            </div>
+
+            <div class="game-card" onclick="showScreen('offersScreen')">
+                <div class="game-icon">🎁</div>
+                <div><strong>الأوفرات</strong></div>
+                <small style="color: #666;">أكمل العروض واربح</small>
+            </div>
+
+            <div class="game-card" onclick="showScreen('surveysScreen')">
+                <div class="game-icon">📋</div>
+                <div><strong>الاستطلاعات</strong></div>
+                <small style="color: #666;">أجب واربح</small>
+            </div>
+
+            <div class="game-card" onclick="showScreen('withdrawScreen')">
+                <div class="game-icon">💰</div>
+                <div><strong>سحب الأرباح</strong></div>
+                <small style="color: #666;">الحد الأدنى: $5</small>
+            </div>
+        </div>
+
+        <button class="btn-danger" style="margin-top: 20px;" onclick="logout()">تسجيل الخروج</button>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="screen">
+        <div class="header">
+            <h2>👨‍💼 لوحة تحكم الأدمن</h2>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalUsers">1,234</div>
+                <div class="stat-label">مستخدم</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalProfit">$456</div>
+                <div class="stat-label">الأرباح</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingWithdrawals">12</div>
+                <div class="stat-label">معلقة</div>
+            </div>
+        </div>
+
+        <h3 style="margin: 20px 0;">القوائم الرئيسية:</h3>
+
+        <button class="btn-primary" onclick="showScreen('manageUsers')">
+            👥 إدارة المستخدمين
+        </button>
+        <button class="btn-primary" onclick="showScreen('manageWithdrawals')">
+            💰 طلبات السحب
+        </button>
+        <button class="btn-primary" onclick="showNotification('قريباً: إدارة الألعاب')">
+            🎮 إدارة الألعاب
+        </button>
+        <button class="btn-primary" onclick="showNotification('قريباً: إدارة الأوفرات')">
+            🎁 الأوفرات والاستطلاعات
+        </button>
+        <button class="btn-primary" onclick="showNotification('قريباً: إعدادات AdMob')">
+            📱 إعدادات AdMob
+        </button>
+        <button class="btn-danger" onclick="logout()">🚪 تسجيل الخروج</button>
+    </div>
+
+    <!-- Manage Users -->
+    <div id="manageUsers" class="screen">
+        <h1 style="text-align: center; padding: 20px;">👥 إدارة المستخدمين</h1>
+        
+        <div class="card">
+            <div id="usersList"></div>
+        </div>
+
+        <button class="btn-danger" onclick="showScreen('adminDashboard')">رجوع</button>
+    </div>
+
+    <!-- Manage Withdrawals -->
+    <div id="manageWithdrawals" class="screen">
+        <h1 style="text-align: center; padding: 20px;">💰 طلبات السحب</h1>
+        
+        <div id="withdrawalsList"></div>
+
+        <button class="btn-danger" onclick="showScreen('adminDashboard')">رجوع</button>
+    </div>
+
+    <!-- Offers Screen -->
+    <div id="offersScreen" class="screen">
+        <h1 style="text-align: center; padding: 20px;">🎁 الأوفرات</h1>
+        
+        <div class="card">
+            <h3>OfferToro</h3>
+            <p style="color: #666; margin: 10px 0;">أكمل العروض واربح المال</p>
+            <button class="btn-primary" onclick="window.open('https://www.offertoro.com', '_blank')">فتح OfferToro</button>
+        </div>
+
+        <div class="card">
+            <h3>AdGate Media</h3>
+            <p style="color: #666; margin: 10px 0;">مهام وعروض متنوعة</p>
+            <button class="btn-primary" onclick="window.open('https://adgatemedia.com', '_blank')">فتح AdGate</button>
+        </div>
+
+        <div class="card">
+            <h3>AdWork Media</h3>
+            <p style="color: #666; margin: 10px 0;">اربح من المهام اليومية</p>
+            <button class="btn-primary" onclick="window.open('https://adworkmedia.com', '_blank')">فتح AdWork</button>
+        </div>
+
+        <button class="btn-danger" onclick="showScreen('userDashboard')">رجوع</button>
+    </div>
+
+    <!-- Surveys Screen -->
+    <div id="surveysScreen" class="screen">
+        <h1 style="text-align: center; padding: 20px;">📋 الاستطلاعات</h1>
+        
+        <div class="card">
+            <h3>Pollfish</h3>
+            <p style="color: #666; margin: 10px 0;">أجب على الاستطلاعات واربح</p>
+            <button class="btn-primary" onclick="window.open('https://www.pollfish.com', '_blank')">فتح Pollfish</button>
+        </div>
+
+        <div class="card">
+            <h3>TheoremReach</h3>
+            <p style="color: #666; margin: 10px 0;">استطلاعات يومية جديدة</p>
+            <button class="btn-primary" onclick="window.open('https://theoremreach.com', '_blank')">فتح TheoremReach</button>
+        </div>
+
+        <button class="btn-danger" onclick="showScreen('userDashboard')">رجوع</button>
+    </div>
+
+    <!-- Withdraw Screen -->
+    <div id="withdrawScreen" class="screen">
+        <h1 style="text-align: center; padding: 20px;">💰 سحب الأرباح</h1>
+        
+        <div class="card">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <strong style="color: #4CAF50; font-size: 20px;">رصيدك: <span id="withdrawBalance">\$0.50</span></strong>
+            </div>
+            
+            <label><strong>اختر العملة الرقمية:</strong></label>
+            <select id="cryptoSelect">
+                <option>USDT (TRC20)</option>
+                <option>Bitcoin (BTC)</option>
+                <option>Ethereum (ETH)</option>
+                <option>Litecoin (LTC)</option>
+            </select>
+
+            <label><strong>المبلغ:</strong></label>
+            <input type="number" id="withdrawAmount" placeholder="الحد الأدنى: \$5" min="5">
+
+            <label><strong>عنوان المحفظة:</strong></label>
+            <input type="text" id="walletAddress" placeholder="أدخل عنوان المحفظة">
+
+            <div style="background: #FFF3E0; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <small style="color: #F57C00;">⚠️ سيتم معالجة طلبك خلال 24 ساعة</small>
+            </div>
+
+            <button class="btn-success" onclick="submitWithdrawal()">إرسال طلب السحب</button>
+            <button class="btn-danger" onclick="showScreen('userDashboard')">رجوع</button>
+        </div>
+    </div>
+
+    <script>
+        // قاعدة البيانات المحلية (LocalStorage)
+        let balance = parseFloat(localStorage.getItem('balance')) || 0.50;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let withdrawals = JSON.parse(localStorage.getItem('withdrawals')) || [];
+        let clickCount = 0;
+        let lastBonusTime = parseInt(localStorage.getItem('lastBonusTime')) || 0;
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+
+        // إخفاء Splash بعد 2 ثانية
+        setTimeout(() => {
+            showScreen(currentUser ? 'userDashboard' : 'loginScreen');
+        }, 2000);
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            // تحديث البيانات عند فتح شاشات معينة
+            if (screenId === 'userDashboard' || screenId === 'withdrawScreen') {
+                updateBalance();
+            }
+            if (screenId === 'adminDashboard') {
+                loadAdminStats();
+            }
+            if (screenId === 'manageUsers') {
+                loadUsers();
+            }
+            if (screenId === 'manageWithdrawals') {
+                loadWithdrawals();
+            }
+        }
+
+        function updateBalance() {
+            document.getElementById('userBalance').textContent = '$' + balance.toFixed(2);
+            if (document.getElementById('withdrawBalance')) {
+                document.getElementById('withdrawBalance').textContent = '$' + balance.toFixed(2);
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('balance', balance);
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('withdrawals', JSON.stringify(withdrawals));
+            localStorage.setItem('lastBonusTime', lastBonusTime);
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        }
+
+        function loginUser() {
+            currentUser = {
+                id: 'user_' + Date.now(),
+                email: 'user@example.com',
+                name: 'مستخدم تجريبي',
+                balance: balance,
+                createdAt: new Date().toISOString()
+            };
+            
+            if (!users.find(u => u.id === currentUser.id)) {
+                users.push(currentUser);
+            }
+            
+            saveData();
+            showNotification('✅ مرحباً! حصلت على مكافأة التسجيل: \$0.50');
+            setTimeout(() => showScreen('userDashboard'), 1500);
+        }
+
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (username === 'admin' && password === 'Admin@2024#Secure') {
+                showNotification('✅ تم تسجيل الدخول بنجاح!');
+                setTimeout(() => showScreen('adminDashboard'), 1000);
+            } else {
+                showNotification('❌ خطأ في البيانات', 'error');
+            }
+        }
+
+        function claimDailyBonus() {
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            if (now - lastBonusTime >= oneDay || lastBonusTime === 0) {
+                balance += 0.10;
+                lastBonusTime = now;
+                saveData();
+                updateBalance();
+                showNotification('🎉 تم إضافة المكافأة اليومية: \$0.10');
+            } else {
+                const remaining = oneDay - (now - lastBonusTime);
+                const hours = Math.floor(remaining / (60 * 60 * 1000));
+                showNotification('⏰ يمكنك الحصول على المكافأة بعد ' + hours + ' ساعة', 'warning');
+            }
+        }
+
+        function submitWithdrawal() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const wallet = document.getElementById('walletAddress').value;
+            const crypto = document.getElementById('cryptoSelect').value;
+
+            if (!amount || !wallet) {
+                showNotification('❌ الرجاء ملء جميع الحقول', 'error');
+                return;
+            }
+
+            if (amount < 5) {
+                showNotification('❌ الحد الأدنى للسحب: \$5', 'error');
+                return;
+            }
+
+            if (amount > balance) {
+                showNotification('❌ رصيدك غير كافٍ', 'error');
+                return;
+            }
+
+            const withdrawal = {
+                id: 'wd_' + Date.now(),
+                userId: currentUser.id,
+                amount: amount,
+                crypto: crypto,
+                wallet: wallet,
+                status: 'pending',
+                date: new Date().toISOString()
+            };
+
+            withdrawals.push(withdrawal);
+            balance -= amount;
+            saveData();
+            updateBalance();
+
+            showNotification('✅ تم إرسال طلب السحب بنجاح!');
+            setTimeout(() => showScreen('userDashboard'), 2000);
+        }
+
+        function loadAdminStats() {
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalProfit').textContent = '$' + (users.length * 10).toFixed(2);
+            document.getElementById('pendingWithdrawals').textContent = withdrawals.filter(w => w.status === 'pending').length;
+        }
+
+        function loadUsers() {
+            const list = document.getElementById('usersList');
+            list.innerHTML = '';
+            
+            if (users.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #666;">لا يوجد مستخدمين</p>';
+                return;
+            }
+
+            users.forEach(user => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <strong>📧 ${user.email}</strong><br>
+                    <small>رصيده: $${user.balance}</small><br>
+                    <small>تاريخ التسجيل: ${new Date(user.createdAt).toLocaleDateString('ar')}</small>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function loadWithdrawals() {
+            const list = document.getElementById('withdrawalsList');
+            list.innerHTML = '';
+            
+            const pending = withdrawals.filter(w => 
